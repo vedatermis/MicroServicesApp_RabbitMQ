@@ -4,6 +4,7 @@ using Basket.API.Data.Concrete;
 using Basket.API.Repositories.Abstract;
 using Basket.API.Repositories.Concrete;
 using EventBusRabbitMQ;
+using EventBusRabbitMQ.Producer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,8 @@ namespace Basket.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers();
+            
             services.AddSingleton<ConnectionMultiplexer>(p =>
             {
                 var configuration = ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"), true);
@@ -62,7 +65,7 @@ namespace Basket.API
                 return new RabbitMqConnection(factory);
             });
 
-            services.AddControllers();
+            services.AddSingleton<EventBusRabbitMqProducer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
